@@ -1,0 +1,162 @@
+{
+	"name": "Notebook 4",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "prodpool",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "1b693c95-1882-46f7-8dc1-cba350da1b22"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/c3aa044a-1526-4176-9f13-f936b554963c/resourceGroups/RGproduction/providers/Microsoft.Synapse/workspaces/poductionenv/bigDataPools/prodpool",
+				"name": "prodpool",
+				"type": "Spark",
+				"endpoint": "https://poductionenv.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/prodpool",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"from azure.identity import ManagedIdentityCredential\n",
+					"import requests\n",
+					"\n",
+					"# 🔹 Replace with your Prod Synapse workspace name\n",
+					"workspace_name = \"poductionenv\""
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"from azure.identity import DefaultAzureCredential\n",
+					"import requests\n",
+					"\n",
+					"workspace_name = \"poductionenv\"\n",
+					"\n",
+					"credential = DefaultAzureCredential()  # uses az login / VS Code / browser token\n",
+					"token = credential.get_token(\"https://dev.azuresynapse.net/.default\")\n",
+					"\n",
+					"headers = {\"Authorization\": f\"Bearer {token.token}\", \"Content-Type\": \"application/json\"}\n",
+					"\n",
+					"publish_url = f\"https://{workspace_name}.dev.azuresynapse.net/publish?api-version=2020-12-01\"\n",
+					"response = requests.post(publish_url, headers=headers)\n",
+					"\n",
+					"print(response.status_code, response.text)\n",
+					""
+				],
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Authenticate with Synapse using Managed Identity (works inside Synapse workspace)\n",
+					"credential = ManagedIdentityCredential()\n",
+					"token = credential.get_token(\"https://dev.azuresynapse.net/.default\")"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"# Prepare headers\n",
+					"headers = {\n",
+					"    \"Authorization\": f\"Bearer {token.token}\",\n",
+					"    \"Content-Type\": \"application/json\"\n",
+					"}"
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"from azure.identity import ManagedIdentityCredential\n",
+					"import requests\n",
+					"\n",
+					"# 🔹 Replace with your Prod Synapse workspace name\n",
+					"workspace_name = \"<your-prod-synapse-workspace-name>\"\n",
+					"\n",
+					"# Authenticate with Synapse using Managed Identity (works inside Synapse workspace)\n",
+					"credential = ManagedIdentityCredential()\n",
+					"token = credential.get_token(\"https://dev.azuresynapse.net/.default\")\n",
+					"\n",
+					"# Prepare headers\n",
+					"headers = {\n",
+					"    \"Authorization\": f\"Bearer {token.token}\",\n",
+					"    \"Content-Type\": \"application/json\"\n",
+					"}\n",
+					"\n",
+					"# 🔹 Publish from Git branch (prod3) → Live mode\n",
+					"publish_url = f\"https://{workspace_name}.dev.azuresynapse.net/publish?api-version=2020-12-01\"\n",
+					"response = requests.post(publish_url, headers=headers)\n",
+					"\n",
+					"# Output result\n",
+					"print(\"Status:\", response.status_code)\n",
+					"print(\"Response:\", response.text)\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"from azure.identity import ManagedIdentityCredential\n",
+					"import requests\n",
+					"\n",
+					"# Replace with your Prod workspace name\n",
+					"workspace_name = \"poductionenv\"\n",
+					"\n",
+					"# Authenticate with Managed Identity (works inside Synapse)\n",
+					"credential = ManagedIdentityCredential()\n",
+					"token = credential.get_token(\"https://dev.azuresynapse.net/.default\")\n",
+					"\n",
+					"headers = {\n",
+					"    \"Authorization\": f\"Bearer {token.token}\",\n",
+					"    \"Content-Type\": \"application/json\"\n",
+					"}\n",
+					"\n",
+					"# Trigger publish\n",
+					"publish_url = f\"https://{workspace_name}.dev.azuresynapse.net/publish?api-version=2020-12-01\"\n",
+					"response = requests.post(publish_url, headers=headers)\n",
+					"\n",
+					"print(response.status_code, response.text)\n",
+					""
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
