@@ -1,38 +1,47 @@
 name: Synapse CI-CD
 
+# Trigger when dev2 branch is updated
 on:
   push:
     branches:
-      - dev2  # trigger on dev2 updates
+      - dev2
 
 jobs:
   deploy_prod:
     runs-on: ubuntu-latest
     steps:
-      # Checkout dev2 (source artifacts)
+
+      # 1️⃣ Checkout dev2 branch (source artifacts)
       - name: Checkout dev2 branch
         uses: actions/checkout@v4
         with:
           ref: dev2
 
-      # Checkout prod3 (ARM templates)
+      # 2️⃣ Checkout prod3 branch (ARM templates)
       - name: Checkout prod3 branch (ARM templates)
         uses: actions/checkout@v4
         with:
           ref: prod3
           path: prod3-templates
 
-      # Azure login
-      - name: Azure Login
-        uses: azure/login@v2
+      # 3️⃣ Azure CLI login using service principal secret
+      - name: Azure CLI Login
+        uses: azure/cli@v1
         with:
-          creds: ${{ secrets.AZURE_SECRET }}
+          azcliversion: 2.57.0
+          inlineScript: |
+            az login --service-principal \
+              -u ${{ fromJSON(secrets.AZURE_SECRET).clientId }} \
+              -p ${{ fromJSON(secrets.AZURE_SECRET).clientSecret }} \
+              --tenant ${{ fromJSON(secrets.AZURE_SECRET).tenantId }}
 
-      # Deploy to production
-      - name: Deploy Synapse to Prod
-        uses: azure/arm-deploy@v2
+      # 4️⃣ Deploy ARM templates from prod3 to production workspace
+      - name: Deploy Synapse to Production
+        uses: azure/cli@v1
         with:
-          subscriptionId: ${{ fromJSON(secrets.AZURE_SECRET).subscriptionId }}
-          resourceGroupName: RGproduction
-          template: prod3-templates/testingenvfabic/TemplateForWorkspace.json
-          parameters: prod3-templates/testingenvfabic/TemplateParametersForWorkspace.json
+          azcliversion: 2.57.0
+          inlineScript: |
+            az deployment group create \
+              --resource-group RGproduction \
+              --template-file prod3-templates/testingenvfabic/TemplateForWorkspace.json \
+              --parameters prod3-templates/testingenvfabic/TemplateParametersForWorkspace.json
