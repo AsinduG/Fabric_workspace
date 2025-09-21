@@ -21,7 +21,7 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           subscriptionId: ${{ fromJSON(secrets.AZURE_SECRET).subscriptionId }}
-          resourceGroupName: my-prod-rg
+          resourceGroupName: RGproduction
           template: dev2/testingenvfabic/TemplateForWorkspace.json
           parameters: dev2/testingenvfabic/TemplateParametersForWorkspace.json
 
