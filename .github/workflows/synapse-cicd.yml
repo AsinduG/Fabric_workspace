@@ -1,1 +1,27 @@
+name: Synapse CI-CD
+
+on:
+  push:
+    branches:
+      - dev2   # or dev, depending on where you publish
+
+jobs:
+  deploy_prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy Synapse to Prod
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: my-prod-rg
+          template: dev/env_test/ArmTemplate.json
+          parameters: dev/env_test/ArmTemplateParameters.json
 
