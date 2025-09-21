@@ -22,6 +22,7 @@ jobs:
         with:
           subscriptionId: ${{ fromJSON(secrets.AZURE_SECRET).subscriptionId }}
           resourceGroupName: my-prod-rg
-          template: dev2/env_test/ArmTemplate.json
-          parameters: dev2/env_test/ArmTemplateParameters.json
+          template: dev2/testingenvfabic/TemplateForWorkspace.json
+          parameters: dev2/testingenvfabic/TemplateParametersForWorkspace.json
+
 
